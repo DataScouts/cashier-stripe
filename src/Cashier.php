@@ -66,6 +66,19 @@ class Cashier
 
         $model = config('cashier.model');
 
+        if ($model === 'App\Models\User') {
+            return (new $model)->where('id', function ($query) use ($stripeId) {
+                return $query
+                    ->select('user_id')
+                    ->from('ecosystem_user_stripe_ids')
+                    ->where([
+                        'stripe_id' => $stripeId,
+                        'ecosystem_id' => ecosystemConfig('id')
+                    ]);
+            })
+                ->first();
+        }
+
         return (new $model)->where('stripe_id', $stripeId)->first();
     }
 
